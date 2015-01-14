@@ -1,2 +1,4 @@
+*.pyc
+
 # Don't upload API keys
 secrets.py
