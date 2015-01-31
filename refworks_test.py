@@ -1,3 +1,8 @@
+"""Tests the connection to the RefWorks API.
+
+Eventually, this will be a class-based wrapper for the API.
+"""
+
 import datetime
 import hmac
 import httplib
@@ -11,6 +16,7 @@ from secrets import *
 
 
 def generate_signature(class_name, access_key, secret_key):
+  """Generates the signature required for all API calls"""
   expires = int(time.mktime(datetime.datetime.now().timetuple())) * 1000
   raw_signature = class_name + access_key + str(expires)
   signature = hmac.new(secret_key, raw_signature, sha1).digest().encode('base64').rstrip('\n')
@@ -19,6 +25,7 @@ def generate_signature(class_name, access_key, secret_key):
 
 
 def make_session():
+  """Initiates an API session"""
   base_url = 'https://www.refworks.com/api2/'
   params = generate_signature('authentication', ACCESS_KEY_ID, SECRET_ID)
   params.update({'method': 'newsess'})
@@ -32,6 +39,7 @@ def make_session():
 
 
 def init_logging():
+  """Sets up error logging"""
   httplib.HTTPConnection.debuglevel = 1
   logging.basicConfig()
   logging.getLogger().setLevel(logging.DEBUG)
@@ -41,7 +49,7 @@ def init_logging():
 
 
 def main():
-  #init_logging()
+  # init_logging()
   make_session()
 
 
