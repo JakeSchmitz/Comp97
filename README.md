@@ -27,3 +27,14 @@ future to maintain the folder hierarchy used in the SSL. The output is
 a set of csv files containing the doc id, the title, and the browsepath, 
 1000 docs to each file. This is currently working for 93% of articles, 
 and the last 7% might just not exist. 
+
+2/3/2015
+Did some work on the bibliography lookup automater. Right now we can 
+successfully read everything from the CSV output of scanssl (after 
+doing a little cleanup to replace commas in the title field with ||)
+and we can make a beautifulsoup soup instance from the tischlibrary 
+search results page. What remains to be done is parsing the soup for
+the first result and finding the unique document id that the tisch 
+library system uses to store bibliography info. This is usually a
+string in the format bXXXXXXX where the X's are numbers. Still 
+digging through the html to find the right way to capture this id.
