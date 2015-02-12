@@ -41,7 +41,7 @@ def retrieve_search_results(entry, writer):
           writer.writerow(entry['id'], entry['browsepath'], entry['title'], entry['authors'], entry['isbn'], doc)
           return
       # Check titles by comparing only uppercase alpha(numeric) characters
-      doc_title = doc['title'].replace('<b>, '').replace('</b>, '').upper()
+      doc_title = doc['title'].replace('<b>', '').replace('</b>', '').upper()
       ssl_title = entry['title'].upper()
       re.sub(r'\W+', '', doc_title)
       re.sub(r'\W+', '', ssl_title)
