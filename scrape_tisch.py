@@ -9,7 +9,7 @@ import sys
 
 COOKIE = {'Summon-Two': 'TRUE'}
 BASE_URL = 'http://tufts.summon.serialssolutions.com/api/search?pn=1&ho=t&q='
-SSL_CSV_FILE = 'ssl-data/ssldata.csv'
+SSL_CSV_FILE = 'isbnscraped.csv'
 
 
 def retrieve_search_results(entry, writer):
