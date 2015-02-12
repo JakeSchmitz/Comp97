@@ -20,14 +20,14 @@ def retrieve_search_results(entry, writer):
   try:
     full_search_results = r.json()
   except ValueError as e:
-    print('%d %s: %s\n' % (entry['id'], entry['title'], e))
+    print('%s %s: %s\n' % (entry['id'], entry['title'], e))
     writer.writerow([entry['id'], entry['browsepath'], entry['title'], entry['authors'], entry['isbn'], None])
     return
 
   # Determine if there are any documents to deal with
   documents = full_search_results['documents']
   if len(documents) == 0:
-    print('%d %s: No results found on Tisch Library\n' % (entry['id'], entry['title']))
+    print('%s %s: No results found on Tisch Library\n' % (entry['id'], entry['title']))
     writer.writerow([entry['id'], entry['browsepath'], entry['title'], entry['authors'], entry['isbn'], None])
     return
 
@@ -65,10 +65,10 @@ def retrieve_search_results(entry, writer):
         return
     except KeyError as e:
       # Some entry we tried to use doesn't exist
-      print('%d %s: %s\n' % (entry['id'], entry['title'], e))
+      print('%s %s: %s\n' % (entry['id'], entry['title'], e))
 
   # No documents caused a match
-  print('%d %s: No results matched on Tisch Library\n' % (entry['id'], entry['title']))
+  print('%s %s: No results matched on Tisch Library\n' % (entry['id'], entry['title']))
   writer.writerow([entry['id'], entry['browsepath'], entry['title'], entry['authors'], entry['isbn'], None])
 
 
