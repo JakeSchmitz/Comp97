@@ -63,13 +63,13 @@ def retrieve_search_results(entry, writer):
   try:
     full_search_results = r.json()
   except ValueError as e:
-    print('%d %s: %s' % (entry['id'], entry['title'], e))
+    print('%s %s: %s\n' % (entry['id'], entry['title'], e))
     return
 
   # Determine if there are any documents to deal with
   documents = full_search_results['documents']
   if len(documents) == 0:
-    print('%d %s: No results found on Tisch Library' % (entry['id'], entry['title']))
+    print('%s %s: No results found on Tisch Library\n' % (entry['id'], entry['title']))
     return
 
   # Figure out if any of them are the one we want
@@ -79,7 +79,7 @@ def retrieve_search_results(entry, writer):
       return
 
   # No documents caused a match
-  print('%d %s: No results matched on Tisch Library' % (entry['id'], entry['title']))
+  print('%s %s: No results matched on Tisch Library' % (entry['id'], entry['title']))
 
 
 def read_input():
