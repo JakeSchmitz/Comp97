@@ -72,7 +72,7 @@ def read_input():
     for row in reader:
       # format of data is id, title, isbn, authors, browsepath
       title_list.append({'id': row[0],
-                         'title': row[1]),
+                         'title': row[1],
                          'isbn': row[2],
                          'authors': row[3],
                          'browsepath': row[4]})
