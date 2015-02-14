@@ -33,7 +33,6 @@ def compare_isbn(entry, doc):
       return True
   return False
 
-B
 
 def compare_title_author(entry, doc):
   """Use title and author to determine if doc is entry from SSL."""
@@ -61,7 +60,6 @@ def compare_title_author(entry, doc):
   return False
 
 def retrieve_search_results(entry, writer):
-  B
   """Sends a query for items with the given title to the Tisch Library website."""
   r = requests.get(BASE_URL + entry['title'], cookies=COOKIE)
 
@@ -116,19 +114,30 @@ def main():
   """Queries the Tisch Library catalogs to retrieve citation information."""
   ssl_entries = read_input()
 
-  with open('tischdata.csv', 'wb') as outfile:
+  with open('tischdata.csv', 'ab') as outfile:
     writer = csv.writer(outfile, quoting=csv.QUOTE_MINIMAL)
-    # output format is id, browsepath, SSL title/isbn/authors, Tisch JSON
-    writer.writerow(['Id', 'Browsepath', 'SSL Title', 'SSL Author', 'SSL ISBN', 'Tisch JSON'])
-    i = 0
-    for entry in ssl_entries:
-      if i % 500 == 0:
-        sys.stderr.write('done %d\n' % i)
-      try:
-        retrieve_search_results(entry, writer)
-      except Exception as e:
-        print('%s %s: Unhandled error %s' % (entry['id'], entry['title'], e))
-      i += 1
+    if len(sys.argv) == 1:
+      # no index list specified, so run on all entries
+      writer.writerow(['Id', 'Browsepath', 'SSL Title', 'SSL Author', 'SSL ISBN', 'Tisch JSON'])
+      i = 0
+      for entry in ssl_entries:
+        if i % 500 == 0:
+          sys.stderr.write('done %d\n' % i)
+        try:
+          retrieve_search_results(entry, writer)
+        except Exception as e:
+          print('%s %s: Unhandled error %s' % (entry['id'], entry['title'], e))
+        i += 1
+    else:
+      # run only on entries in list of indices
+      index_filename = sys.argv[1]
+      with open(index_filename, 'r') as infile:
+        indices = [int(row) for row in infile]
+        for i in indices:
+          try:
+            retrieve_search_results(ssl_entries[i], writer)
+          except Exception as e:
+            print('%s %s: Unhandled error %s' % (ssl_entries[i]['id'], ssl_entries[i]['title'], e))
 
 
 if __name__ == '__main__':
