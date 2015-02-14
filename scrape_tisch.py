@@ -18,15 +18,15 @@ def compare_isbn(entry, doc):
   try:
     doc_isbns += doc['issns']
   except KeyError as e:
-    print('%s %s: %s' % (entry['id'], entry['title'], e))
+    pass
   try:
     doc_isbns += doc['eissns']
   except KeyError as e:
-    print('%s %s: %s' % (entry['id'], entry['title'], e))
+    pass
   try:
     doc_isbns += doc['isbns']
   except KeyError as e:
-    print('%s %s: %s' % (entry['id'], entry['title'], e))
+    pass
   for doc_isbn in doc_isbns:
     if entry['isbn'] == doc_isbn:
       # Found match
@@ -56,7 +56,7 @@ def compare_title_author(entry, doc):
     return True
   except KeyError as e:
     # Some entry we tried to use doesn't exist
-    print('%s %s: %s' % (entry['id'], entry['title'], e))
+    pass
   return False
 
 def retrieve_search_results(entry, writer):
@@ -67,13 +67,13 @@ def retrieve_search_results(entry, writer):
   try:
     full_search_results = r.json()
   except ValueError as e:
-    print('%s %s: %s' % (entry['id'], entry['title'], e))
+    print('%s %s %s: %s' % (entry['id'], entry['browsepath'], entry['title'], e))
     return
 
   # Determine if there are any documents to deal with
   documents = full_search_results['documents']
   if len(documents) == 0:
-    print('%s %s: No results found on Tisch Library' % (entry['id'], entry['title']))
+    print('%s %s %s: No results found on Tisch Library' % (entry['id'], entry['browsepath'], entry['title']))
     return
 
   # Figure out if any of them are the one we want
@@ -86,7 +86,7 @@ def retrieve_search_results(entry, writer):
       return
 
   # No documents caused a match
-  print('%s %s: No results matched on Tisch Library' % (entry['id'], entry['title']))
+  print('%s %s %s: No results matched on Tisch Library' % (entry['id'], entry['browsepath'], entry['title']))
 
 
 def read_input():
