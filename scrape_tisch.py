@@ -18,17 +18,22 @@ def compare_isbn(entry, doc):
   try:
     doc_isbns += doc['issns']
   except KeyError as e:
-    print('%s %s: %s\n' % (entry['id'], entry['title'], e))
+    print('%s %s: %s' % (entry['id'], entry['title'], e))
   try:
     doc_isbns += doc['eissns']
   except KeyError as e:
-    print('%s %s: %s\n' % (entry['id'], entry['title'], e))
+    print('%s %s: %s' % (entry['id'], entry['title'], e))
+  try:
+    doc_isbns += doc['isbns']
+  except KeyError as e:
+    print('%s %s: %s' % (entry['id'], entry['title'], e))
   for doc_isbn in doc_isbns:
     if entry['isbn'] == doc_isbn:
       # Found match
       return True
   return False
 
+B
 
 def compare_title_author(entry, doc):
   """Use title and author to determine if doc is entry from SSL."""
@@ -52,10 +57,11 @@ def compare_title_author(entry, doc):
     return True
   except KeyError as e:
     # Some entry we tried to use doesn't exist
-    print('%d %s: %s\n' % (entry['id'], entry['title'], e))
+    print('%s %s: %s' % (entry['id'], entry['title'], e))
   return False
 
 def retrieve_search_results(entry, writer):
+  B
   """Sends a query for items with the given title to the Tisch Library website."""
   r = requests.get(BASE_URL + entry['title'], cookies=COOKIE)
 
@@ -63,19 +69,22 @@ def retrieve_search_results(entry, writer):
   try:
     full_search_results = r.json()
   except ValueError as e:
-    print('%s %s: %s\n' % (entry['id'], entry['title'], e))
+    print('%s %s: %s' % (entry['id'], entry['title'], e))
     return
 
   # Determine if there are any documents to deal with
   documents = full_search_results['documents']
   if len(documents) == 0:
-    print('%s %s: No results found on Tisch Library\n' % (entry['id'], entry['title']))
+    print('%s %s: No results found on Tisch Library' % (entry['id'], entry['title']))
     return
 
   # Figure out if any of them are the one we want
   for doc in documents:
     if compare_isbn(entry, doc) or compare_title_author(entry, doc):
-      writer.writerow([entry['id'], entry['browsepath'], entry['title'], entry['authors'], entry['isbn'], doc])
+      # This is the result that matches the SSL entry--print metadata one field at a time
+      metadata = doc.items()
+      metadata.sort(key=lambda tup: tup[0])
+      writer.writerow([entry['id'], entry['browsepath'], entry['title'], entry['authors'], entry['isbn']] + metadata)
       return
 
   # No documents caused a match
@@ -115,7 +124,10 @@ def main():
     for entry in ssl_entries:
       if i % 500 == 0:
         sys.stderr.write('done %d\n' % i)
-      retrieve_search_results(entry, writer)
+      try:
+        retrieve_search_results(entry, writer)
+      except Exception as e:
+        print('%s %s: Unhandled error %s' % (entry['id'], entry['title'], e))
       i += 1
 
 
