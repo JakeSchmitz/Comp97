@@ -67,13 +67,13 @@ def retrieve_search_results(entry, writer):
   try:
     full_search_results = r.json()
   except ValueError as e:
-    print('%s %s %s: %s' % (entry['id'], entry['browsepath'], entry['title'], e))
+    print('%s, %s, %s, %s' % (entry['id'], entry['browsepath'], entry['title'], e))
     return
 
   # Determine if there are any documents to deal with
   documents = full_search_results['documents']
   if len(documents) == 0:
-    print('%s %s %s: No results found on Tisch Library' % (entry['id'], entry['browsepath'], entry['title']))
+    print('%s, %s, %s, No results found on Tisch Library' % (entry['id'], entry['browsepath'], entry['title']))
     return
 
   # Figure out if any of them are the one we want
@@ -86,7 +86,7 @@ def retrieve_search_results(entry, writer):
       return
 
   # No documents caused a match
-  print('%s %s %s: No results matched on Tisch Library' % (entry['id'], entry['browsepath'], entry['title']))
+  print('%s, %s, %s, No results matched on Tisch Library' % (entry['id'], entry['browsepath'], entry['title']))
 
 
 def read_input():
@@ -137,7 +137,7 @@ def main():
           try:
             retrieve_search_results(ssl_entries[i], writer)
           except Exception as e:
-            print('%s %s: Unhandled error %s' % (ssl_entries[i]['id'], ssl_entries[i]['title'], e))
+            print('%s, %s, %s, Unhandled error %s' % (ssl_entries[i]['id'], ssl_entries[i]['browsepath'], ssl_entries[i]['title'], e))
 
 
 if __name__ == '__main__':
