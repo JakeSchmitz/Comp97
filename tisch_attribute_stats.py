@@ -1,8 +1,8 @@
+import collections
 import csv
 
 
-entry_list = []
-total_key_set = set()
+total_key_set = collections.Counter()
 
 
 class SSLEntry(object):
@@ -10,38 +10,40 @@ class SSLEntry(object):
   def __init__(self):
     self.keys = []
 
-  def __str__(self):
-    to_return = ''
-    for key, value in self.__dict__.iteritems():
-      to_return += '%s: %s\n' % (key, value)
-    return to_return
+def process_entries():
+  try:
+    entry_list = []
+    with open('tischdata.csv', 'rb') as f:
+      reader = csv.reader(f)
+      for row in reader:
+        new_entry = SSLEntry()
+        # First five entries are SSL-related and we don't care about them
+        for i in xrange(5, len(row)):
+          key, _ = eval(row[i])
+          if key in new_entry.keys:
+            continue
+          new_entry.keys.append(key)
+        entry_list.append(new_entry)
+        for key in new_entry.keys:
+          total_key_set[key] += 1
+  except:
+    pass
+  return entry_list
 
-  def percent_full(self):
-    """Returns percentage of all attributes this entry has"""
-    return float(len(self.keys)) / float(len(total_key_set))
+
+def write_stats(entry_list):
+  num_keys_list = [len(e.keys) for e in entry_list]
+  print 'Number of keys:\t%d' % len(total_key_set)
+  print 'Number of publications:\t%d' % len(num_keys_list)
+  print ''
+  print 'Frequency of each key among articles:'
+  for k, v in total_key_set.most_common():
+    print '    %s\t%d\t%f' % (k, v, v / float(len(num_keys_list)))
+  print ''
+  print 'Min keys present: %d' % min(num_keys_list)
+  print 'Max keys present: %d' % max(num_keys_list)
+  print 'Average keys present: %.2f' % (sum(num_keys_list) / float(len(num_keys_list)))
 
 
-try:
-  with open('tischdata.csv', 'rb') as f:
-    reader = csv.reader(f)
-    for row in reader:
-      # First five entries are SSL-related and we don't care about them
-      new_entry = SSLEntry()
-      for i in xrange(5, len(row)):
-        item = eval(row[i])
-        key, _ = item
-        new_entry.keys.append(key)
-        total_key_set.add(key)
-      entry_list.append(new_entry)
-except:
-  pass
-
-percent_list = [e.percent_full() for e in entry_list]
-
-print 'All keys we\'ve found thus far:'
-for k in sorted(total_key_set):
-  print '    %s' % k
-print 'Number of keys: %d' % len(total_key_set)
-print 'Min: %f' % min(percent_list)
-print 'Max: %f' % max(percent_list)
-print 'Average: %f' % (sum(percent_list) / len(percent_list))
+if __name__ == '__main__':
+  write_stats(process_entries())
